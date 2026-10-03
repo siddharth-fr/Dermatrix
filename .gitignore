@@ -22,3 +22,4 @@ temp.js
 # Editor settings
 .vscode/
 .idea/
+model.pth
