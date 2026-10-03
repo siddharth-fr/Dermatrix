@@ -105,7 +105,8 @@ def analyze_image_validity(image_bytes: bytes, mime_type: str = "image/jpeg") ->
     - color_variation_score (higher = greater visible color variation)
     - texture_variation_score (higher = greater visible texture variation)
     - visual_complexity_score (higher = greater structural complexity)
-    - overall_morphology_score (0 = very simple/regular morphology, 100 = highly irregular/complex morphology). This is NOT a cancer probability.
+    - size_score (0 = very small/focal spot <3mm, 50 = typical ~6mm diameter, 100 = very large/extensive lesion >10mm)
+    - overall_morphology_score (0 = very simple/regular/small, 100 = highly irregular/complex/large morphology). Incorporate size as a major feature with a 0.6 morphology / 0.4 size weight ratio. This is NOT a cancer probability.
     
     Provide concise, human-readable observations describing only what is visually observable. Do NOT mention melanoma, cancer, or malignancy.
     """
@@ -194,7 +195,8 @@ def analyze_image_validity(image_bytes: bytes, mime_type: str = "image/jpeg") ->
                                 "color_variation_score": types.Schema(type=types.Type.INTEGER),
                                 "texture_variation_score": types.Schema(type=types.Type.INTEGER),
                                 "visual_complexity_score": types.Schema(type=types.Type.INTEGER),
-                                "overall_morphology_score": types.Schema(type=types.Type.INTEGER),
+                                "size_score": types.Schema(type=types.Type.INTEGER, description="0-100 score representing lesion size/diameter"),
+                                "overall_morphology_score": types.Schema(type=types.Type.INTEGER, description="0-100 overall score combining 60% morphology features + 40% size score"),
                                 "confidence": types.Schema(type=types.Type.INTEGER),
                                 "observations": types.Schema(
                                     type=types.Type.ARRAY,
@@ -231,6 +233,26 @@ def analyze_image_validity(image_bytes: bytes, mime_type: str = "image/jpeg") ->
         # Ensure decision is one of the valid options (defensive)
         if result_dict.get("decision") not in ["REJECT", "RETAKE", "CONTINUE", "REVIEW"]:
             result_dict["decision"] = "REVIEW"
+
+        # Apply exact 0.6 morphology / 0.4 size split weighting
+        va = result_dict.get("visual_assessment")
+        if va and isinstance(va, dict):
+            raw_morph = va.get("overall_morphology_score", 50)
+            size_s = va.get("size_score")
+            if size_s is None:
+                bbox = result_dict.get("lesion_bbox")
+                if bbox and len(bbox) == 4:
+                    bw = abs(bbox[3] - bbox[1])
+                    bh = abs(bbox[2] - bbox[0])
+                    size_s = int(min(100, max(0, ((bw + bh) / 2) / 3.5)))
+                else:
+                    size_s = 50
+                va["size_score"] = size_s
+            
+            # Weighted 0.6 morphology + 0.4 size
+            combined_score = round(0.6 * raw_morph + 0.4 * size_s)
+            va["raw_morphology_score"] = raw_morph
+            va["overall_morphology_score"] = int(min(100, max(0, combined_score)))
             
         _GATE_CACHE[cache_key] = result_dict
         return result_dict

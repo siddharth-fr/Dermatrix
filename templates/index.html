@@ -200,6 +200,25 @@
             opacity: 0.35;
             cursor: not-allowed;
         }
+        .ctrl-3d {
+            height: 32px;
+            padding: 0 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-main);
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-btn);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            outline: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .ctrl-3d:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--bg-panel-elevated);
+        }
 
         /* ── Viewport (ONLY This Scroll Container Moves) ── */
         .workspace-viewport {
@@ -1249,16 +1268,19 @@
                                 </div>
                                 
                                 <div class="sidebar-summary-card" style="padding: 24px; background: linear-gradient(to bottom right, var(--bg-panel), rgba(15, 23, 42, 0.8)); border: 1px solid var(--border);">
-                                    <div class="section-label" style="margin-bottom: 16px;">AI Morphological Assessment</div>
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+                                        <div class="section-label" style="margin: 0;">AI Morphological Assessment</div>
+                                        <span style="font-size: 10px; color: var(--accent); font-weight: 600; background: var(--accent-subtle); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(45, 212, 191, 0.2);">60% Morphology + 40% Size</span>
+                                    </div>
                                     <div style="display:flex; align-items:center; justify-content:space-between;">
                                         <div>
                                             <div style="font-size: 42px; font-weight: 800; font-family: var(--font-mono); line-height: 1;" id="visRiskIndex">--</div>
                                             <div style="font-size: 13px; font-weight: 600; margin-top: 4px;" id="visRiskLabel">Analysis Pending</div>
                                         </div>
                                         <div style="font-size: 11px; text-align: right; color: var(--text-subtle); line-height: 1.6; border-left: 1px solid var(--border); padding-left: 16px;">
-                                            <div>&lt; 40: Regular</div>
-                                            <div style="color: var(--status-amber);">40 - 60: Complex</div>
-                                            <div style="color: var(--status-red);">&gt; 60: Highly Irregular</div>
+                                            <div>&lt; 40: Regular / Small</div>
+                                            <div style="color: var(--status-amber);">40 - 60: Moderate Variation</div>
+                                            <div style="color: var(--status-red);">&gt; 60: Highly Irregular / Large</div>
                                         </div>
                                     </div>
                                 </div>
@@ -1287,7 +1309,7 @@
                                         <span style="font-size: 11px; color: var(--text-muted);"><span id="geminiConfIndicator" style="color: var(--accent);">--%</span> Confidence</span>
                                     </div>
                                     
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: x 24px; row-gap: 20px;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; row-gap: 20px;">
                                         <!-- Shape -->
                                         <div>
                                             <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px; font-weight: 600; color: var(--text-main);">
@@ -1358,6 +1380,15 @@
                                             </div>
                                             <div style="height:6px; background:var(--bg-base); border-radius:3px; overflow:hidden;">
                                                 <div id="barGemComp" style="height:100%; background:var(--status-red); width:0%; transition: width 1s ease-out;"></div>
+                                            </div>
+                                        </div>
+                                        <!-- Lesion Size (40% Weight) -->
+                                        <div style="grid-column: span 2; background: rgba(45, 212, 191, 0.05); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(45, 212, 191, 0.15);">
+                                            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:6px; font-weight: 600; color: var(--accent);">
+                                                <span>Lesion Size Factor (40% Morphology Weight)</span><span style="font-family:var(--font-mono); color: var(--accent);" id="gemVisSizeTxt">--</span>
+                                            </div>
+                                            <div style="height:6px; background:var(--bg-base); border-radius:3px; overflow:hidden;">
+                                                <div id="barGemSize" style="height:100%; background:var(--accent); width:0%; transition: width 1s ease-out;"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -1531,6 +1562,7 @@
                                     <div style="display: flex; justify-content: space-between; gap: 20px;">
                                         <div style="flex: 1;">
                                             <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748B; margin-bottom: 2px;">Overall Morphology Score</div>
+                                            <div style="font-size: 10px; color: #0284C7; font-weight: 600; margin-bottom: 2px;">60% Morphology + 40% Size</div>
                                             <div class="report-ai-dx" id="repAiOverallMorph" style="color: #0F172A; font-size: 24px;">--/100</div>
                                             <div style="font-size: 11px; color: #475569; margin-top: 4px;">Confidence: <strong id="repAiGateConf">--%</strong></div>
                                         </div>
@@ -1558,6 +1590,7 @@
                                                     <tr><td style="padding: 2px 0;">Color Variation:</td><td id="repVisColor" style="text-align: right; font-family: var(--font-mono);">--</td></tr>
                                                     <tr><td style="padding: 2px 0;">Texture Variation:</td><td id="repVisTexture" style="text-align: right; font-family: var(--font-mono);">--</td></tr>
                                                     <tr><td style="padding: 2px 0;">Visual Complexity:</td><td id="repVisComp" style="text-align: right; font-family: var(--font-mono);">--</td></tr>
+                                                    <tr><td style="padding: 2px 0; color: #0284C7; font-weight: 600;">Lesion Size (40% Wt):</td><td id="repVisSize" style="text-align: right; font-family: var(--font-mono); color: #0284C7; font-weight: 700;">--</td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -1668,7 +1701,7 @@
                                                 <th>Diameter</th>
                                                 <th>Area</th>
                                                 <th>Asymmetry</th>
-                                                <th>Diagnosis</th>
+                                                <th>Morphology Score</th>
                                                 <th>Evolution Status</th>
                                             </tr>
                                         </thead>
@@ -1701,16 +1734,16 @@
                         <div id="container3D" style="flex: 1; width: 100%; background: #000; cursor: grab;"></div>
                         
                         <!-- Controls overlay -->
-                        <div style="position: absolute; bottom: 24px; left: 0; right: 0; z-index: 10; display: flex; gap: 12px; justify-content: center;">
-                            <select id="selColorTheme" class="tab-btn" style="background: var(--bg-panel); border: 1px solid var(--border);">
+                        <div style="position: absolute; bottom: 24px; left: 0; right: 0; z-index: 10; display: flex; gap: 12px; justify-content: center;" onclick="event.stopPropagation()">
+                            <select id="selColorTheme" class="ctrl-3d">
                                 <option value="real" selected>Theme: Real Image</option>
                                 <option value="greyscale">Theme: Greyscale</option>
                                 <option value="depth">Theme: Depth Map</option>
                                 <option value="redgreen">Theme: Red-Green</option>
                                 <option value="clay">Theme: Solid Clay</option>
                             </select>
-                            <button class="tab-btn" id="btnToggleWireframe" style="background: var(--bg-panel); border: 1px solid var(--border);">Wireframe: OFF</button>
-                            <select id="selDepthExaggeration" class="tab-btn" style="background: var(--bg-panel); border: 1px solid var(--border);">
+                            <button class="ctrl-3d" id="btnToggleWireframe">Wireframe: OFF</button>
+                            <select id="selDepthExaggeration" class="ctrl-3d">
                                 <option value="0.5">Depth Scale: 0.5×</option>
                                 <option value="1">Depth Scale: 1.0×</option>
                                 <option value="2">Depth Scale: 2.0×</option>
@@ -1846,8 +1879,8 @@
         const workspaceEmptyState = document.getElementById('workspaceEmptyState');
         const viewCanvas = document.getElementById('view-canvas');
 
-        // Tab Navigation
-        const tabBtns = document.querySelectorAll('.tab-btn');
+        // Tab Navigation (strictly scoped to workspace header tabs)
+        const tabBtns = document.querySelectorAll('.workspace-tabs .tab-btn');
         const tabOverlay = document.getElementById('tabOverlay');
         const tabCropped = document.getElementById('tabCropped');
         const tabOriginal = document.getElementById('tabOriginal');
@@ -2460,6 +2493,7 @@
         });
 
         function switchView(viewId) {
+            if (!viewId) return;
             tabBtns.forEach(b => {
                 b.classList.toggle('active', b.dataset.view === viewId);
             });
@@ -2647,12 +2681,36 @@
                 }
             }
 
+            // Quantitative Features
+            const feat = data.features;
+            const isPhysical = feat.diameter_mm !== "N/A (no scale)";
+
+            // Calculate clinical size factor score (0-100)
+            // 6mm is the key clinical ABCDE threshold (~50 score), 12mm+ is large (~100 score)
+            let calculatedSizeScore = 50;
+            if (isPhysical && typeof feat.diameter_mm === 'number') {
+                calculatedSizeScore = Math.min(100, Math.max(0, Math.round((feat.diameter_mm / 12) * 100)));
+            } else if (feat.diameter_px) {
+                calculatedSizeScore = Math.min(100, Math.max(0, Math.round((feat.diameter_px / 400) * 100)));
+            }
+
             // Gemini Vision Gate Assessment
             if (currentVisionGateResult && currentVisionGateResult.visual_assessment) {
                 const va = currentVisionGateResult.visual_assessment;
                 const thresh = currentVisionGateResult.visual_thresholds || {};
 
-                document.getElementById('repAiOverallMorph').textContent = `${va.overall_morphology_score !== undefined ? va.overall_morphology_score : '--'}/100`;
+                // Determine final size score: physical scale takes priority if available, else Gemini visual size score
+                const sizeScore = (isPhysical && typeof feat.diameter_mm === 'number')
+                    ? calculatedSizeScore
+                    : (va.size_score !== undefined ? va.size_score : calculatedSizeScore);
+
+                // Raw morphology (shape, border, symmetry, texture, complexity)
+                const rawMorph = va.raw_morphology_score !== undefined ? va.raw_morphology_score : (va.overall_morphology_score || 50);
+
+                // 60% Morphology + 40% Size Split
+                const weightedOverallMorph = Math.min(100, Math.max(0, Math.round(0.6 * rawMorph + 0.4 * sizeScore)));
+
+                document.getElementById('repAiOverallMorph').textContent = `${weightedOverallMorph}/100`;
                 document.getElementById('repAiGateConf').textContent = `${va.confidence || '--'}%`;
 
                 document.getElementById('repThreshMorph').textContent = (thresh.morphology || '--').replace('_', ' ');
@@ -2668,6 +2726,8 @@
                 document.getElementById('repVisColor').textContent = va.color_variation_score !== undefined ? va.color_variation_score : '--';
                 document.getElementById('repVisTexture').textContent = va.texture_variation_score !== undefined ? va.texture_variation_score : '--';
                 document.getElementById('repVisComp').textContent = va.visual_complexity_score !== undefined ? va.visual_complexity_score : '--';
+                const repVisSizeEl = document.getElementById('repVisSize');
+                if (repVisSizeEl) repVisSizeEl.textContent = `${sizeScore} (40% wt)`;
 
                 const obsList = document.getElementById('repVisObs');
                 if (va.observations && va.observations.length > 0) {
@@ -2679,10 +2739,6 @@
                 document.getElementById('repAiOverallMorph').textContent = '--/100';
                 document.getElementById('repVisObs').innerHTML = '<li>Assessment not available (image issue).</li>';
             }
-
-            // Quantitative Features
-            const feat = data.features;
-            const isPhysical = feat.diameter_mm !== "N/A (no scale)";
 
             // Generate 3D Model
             const textureDataURL = data.depth_texture_b64 ? `data:image/png;base64,${data.depth_texture_b64}` : `data:image/png;base64,${data.cropped_b64}`;
@@ -2730,6 +2786,11 @@
             // Visualizer view: Use Gemini data if available
             if (currentVisionGateResult && currentVisionGateResult.visual_assessment) {
                 const va = currentVisionGateResult.visual_assessment;
+                const sizeScore = (isPhysical && typeof feat.diameter_mm === 'number')
+                    ? calculatedSizeScore
+                    : (va.size_score !== undefined ? va.size_score : calculatedSizeScore);
+                const rawMorph = va.raw_morphology_score !== undefined ? va.raw_morphology_score : (va.overall_morphology_score || 50);
+                const weightedOverallMorph = Math.min(100, Math.max(0, Math.round(0.6 * rawMorph + 0.4 * sizeScore)));
                 
                 // Radar values from Gemini (converted to irregularity/variation where needed)
                 const gemRadarVals = [
@@ -2752,6 +2813,8 @@
                 document.getElementById('gemVisColorTxt').textContent = `${va.color_variation_score || 0}%`;
                 document.getElementById('gemVisTextureTxt').textContent = `${va.texture_variation_score || 0}%`;
                 document.getElementById('gemVisCompTxt').textContent = `${va.visual_complexity_score || 0}%`;
+                const gemVisSizeEl = document.getElementById('gemVisSizeTxt');
+                if (gemVisSizeEl) gemVisSizeEl.textContent = `${sizeScore}% (40% Weight)`;
                 
                 // Animate bars
                 setTimeout(() => {
@@ -2763,19 +2826,21 @@
                     document.getElementById('barGemColor').style.width = `${va.color_variation_score || 0}%`;
                     document.getElementById('barGemTexture').style.width = `${va.texture_variation_score || 0}%`;
                     document.getElementById('barGemComp').style.width = `${va.visual_complexity_score || 0}%`;
+                    const barSize = document.getElementById('barGemSize');
+                    if (barSize) barSize.style.width = `${sizeScore}%`;
                 }, 100);
                 
                 // Confidence and Risk
                 document.getElementById('geminiConfIndicator').textContent = `${va.confidence || 0}%`;
                 
-                const riskVal = va.overall_morphology_score || 0;
+                const riskVal = weightedOverallMorph;
                 document.getElementById('visRiskIndex').textContent = riskVal;
                 const visRiskLabel = document.getElementById('visRiskLabel');
                 const visRiskIndex = document.getElementById('visRiskIndex');
                 
                 if (riskVal > 60) {
                     visRiskIndex.style.color = 'var(--status-red)';
-                    visRiskLabel.textContent = 'Highly Irregular / Complex';
+                    visRiskLabel.textContent = 'Highly Irregular / Large';
                     visRiskLabel.style.color = 'var(--status-red)';
                 } else if (riskVal > 40) {
                     visRiskIndex.style.color = 'var(--status-amber)';
@@ -2783,7 +2848,7 @@
                     visRiskLabel.style.color = 'var(--status-amber)';
                 } else {
                     visRiskIndex.style.color = 'var(--accent)';
-                    visRiskLabel.textContent = 'Regular / Uniform';
+                    visRiskLabel.textContent = 'Regular / Small';
                     visRiskLabel.style.color = 'var(--accent)';
                 }
                 
@@ -2801,8 +2866,9 @@
             } else {
                 document.getElementById('visRadarSvg').innerHTML = generateRadarSVG(normValues, true);
                 
-                const risk = (asymNorm + borderNorm + colorNorm + shapeNorm + compNorm) / 5;
-                const riskStr = risk.toFixed(1);
+                const morphAvg = (asymNorm + borderNorm + colorNorm + shapeNorm + compNorm) / 5;
+                const combinedRisk = Math.min(100, Math.max(0, Math.round(0.6 * morphAvg + 0.4 * calculatedSizeScore)));
+                const riskStr = String(combinedRisk);
                 document.getElementById('sideRisk').textContent = `${riskStr} / 100`;
                 document.getElementById('repMorphIndex').textContent = `${riskStr} / 100`;
 
@@ -2810,11 +2876,11 @@
                 const visRiskLabel = document.getElementById('visRiskLabel');
                 visRiskIndex.textContent = riskStr;
 
-                if (risk > 60) {
+                if (combinedRisk > 60) {
                     visRiskIndex.style.color = 'var(--status-red)';
                     visRiskLabel.textContent = 'Elevated Morphological Risk';
                     visRiskLabel.style.color = 'var(--status-red)';
-                } else if (risk > 40) {
+                } else if (combinedRisk > 40) {
                     visRiskIndex.style.color = 'var(--status-amber)';
                     visRiskLabel.textContent = 'Moderate Morphological Risk';
                     visRiskLabel.style.color = 'var(--status-amber)';
@@ -2872,10 +2938,121 @@
         // ══════════════════════════════════════════════════════════════════
         const STORAGE_HISTORY_KEY = 'dermatrix_history_v1';
 
+        // Helper: Calculate standard Overall Morphology Score & Clinical Ranking (identical to Report System)
+        function computeLesionMorphology(feat, isPhysical, visionGateResult) {
+            feat = feat || {};
+            let calculatedSizeScore = 50;
+            if (isPhysical && typeof feat.diameter_mm === 'number') {
+                calculatedSizeScore = Math.min(100, Math.max(0, Math.round((feat.diameter_mm / 12) * 100)));
+            } else if (feat.diameter_px) {
+                calculatedSizeScore = Math.min(100, Math.max(0, Math.round((feat.diameter_px / 400) * 100)));
+            }
+
+            let morphologyScore = 50;
+            let visualConcern = 'low';
+
+            if (visionGateResult && visionGateResult.visual_assessment) {
+                const va = visionGateResult.visual_assessment;
+                const thresh = visionGateResult.visual_thresholds || {};
+                const sizeScore = (isPhysical && typeof feat.diameter_mm === 'number')
+                    ? calculatedSizeScore
+                    : (va.size_score !== undefined ? va.size_score : calculatedSizeScore);
+                const rawMorph = va.raw_morphology_score !== undefined ? va.raw_morphology_score : (va.overall_morphology_score || 50);
+                morphologyScore = Math.min(100, Math.max(0, Math.round(0.6 * rawMorph + 0.4 * sizeScore)));
+                visualConcern = (thresh.visual_concern || (morphologyScore > 60 ? 'elevated' : (morphologyScore > 40 ? 'moderate' : 'low'))).replace('_', ' ');
+            } else {
+                const asymNorm = Math.min(100, (((typeof feat.asymmetry_mean === 'number' ? feat.asymmetry_mean : feat.asymmetry) || 0) / 0.15) * 100);
+                const borderNorm = Math.min(100, (((typeof feat.border_irregularity === 'number' ? feat.border_irregularity : feat.border) || 0) / 0.3) * 100);
+                const colorNorm = Math.min(100, (((typeof feat.n_colors === 'number' ? feat.n_colors : feat.nColors) || 1) / 6) * 100);
+                const rawMorph = Math.round(0.4 * asymNorm + 0.4 * borderNorm + 0.2 * colorNorm);
+                morphologyScore = Math.min(100, Math.max(0, Math.round(0.6 * rawMorph + 0.4 * calculatedSizeScore)));
+                visualConcern = morphologyScore > 60 ? 'elevated' : (morphologyScore > 40 ? 'moderate' : 'low');
+            }
+
+            let ranking = 'Regular / Small';
+            let rankingColor = 'var(--accent)';
+            if (morphologyScore > 60) {
+                ranking = 'Highly Irregular / Large';
+                rankingColor = 'var(--status-red)';
+            } else if (morphologyScore > 40) {
+                ranking = 'Moderate Variation';
+                rankingColor = 'var(--status-amber)';
+            }
+
+            return {
+                score: morphologyScore,
+                ranking: ranking,
+                concern: visualConcern,
+                color: rankingColor
+            };
+        }
+
+        // Backward compatibility & migration for existing localStorage visits
+        function normalizeHistoryItem(item) {
+            if (!item) return item;
+            
+            // If already has morphologyScore, ensure ranking and colors are properly set
+            if (typeof item.morphologyScore === 'number') {
+                if (!item.morphologyRanking) {
+                    if (item.morphologyScore > 60) {
+                        item.morphologyRanking = 'Highly Irregular / Large';
+                        item.visualConcern = 'elevated';
+                        item.rankingColor = 'var(--status-red)';
+                    } else if (item.morphologyScore > 40) {
+                        item.morphologyRanking = 'Moderate Variation';
+                        item.visualConcern = 'moderate';
+                        item.rankingColor = 'var(--status-amber)';
+                    } else {
+                        item.morphologyRanking = 'Regular / Small';
+                        item.visualConcern = 'low';
+                        item.rankingColor = 'var(--accent)';
+                    }
+                }
+                if (!item.rankingColor) {
+                    item.rankingColor = item.morphologyScore > 60 ? 'var(--status-red)' : (item.morphologyScore > 40 ? 'var(--status-amber)' : 'var(--accent)');
+                }
+                delete item.aiDx;
+                delete item.aiConf;
+                return item;
+            }
+
+            // Legacy item without morphologyScore: migrate using recorded geometrical features
+            const feat = {
+                diameter_mm: item.isPhysical && item.diameterUnit === 'mm' ? item.diameter : undefined,
+                diameter_px: !item.isPhysical || item.diameterUnit === 'px' ? item.diameter : undefined,
+                asymmetry_mean: item.asymmetry || 0,
+                border_irregularity: item.border || 0,
+                n_colors: item.nColors || 1
+            };
+
+            const morph = computeLesionMorphology(feat, item.isPhysical, null);
+            item.morphologyScore = morph.score;
+            item.morphologyRanking = morph.ranking;
+            item.visualConcern = morph.concern;
+            item.rankingColor = morph.color;
+            delete item.aiDx;
+            delete item.aiConf;
+
+            return item;
+        }
+
         function getHistory() {
             try {
                 const raw = localStorage.getItem(STORAGE_HISTORY_KEY);
-                return raw ? JSON.parse(raw) : [];
+                if (!raw) return [];
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return [];
+                let needsResave = false;
+                const normalized = parsed.map(it => {
+                    if (typeof it.morphologyScore !== 'number' || it.aiDx !== undefined) {
+                        needsResave = true;
+                    }
+                    return normalizeHistoryItem(it);
+                });
+                if (needsResave) {
+                    saveHistoryList(normalized);
+                }
+                return normalized;
             } catch (e) {
                 return [];
             }
@@ -2911,8 +3088,10 @@
             const notes = modalVisitNotes.value.trim() || 'Routine dermoscopic follow-up.';
             
             const feat = currentAnalysisResult.features;
-            const ai = currentAnalysisResult.ai_classification || {};
             const isPhysical = feat.diameter_mm !== "N/A (no scale)";
+
+            // Compute morphology score and ranking identical to the Diagnostic Report
+            const morph = computeLesionMorphology(feat, isPhysical, currentVisionGateResult);
 
             const item = {
                 id: 'visit_' + Date.now(),
@@ -2930,8 +3109,10 @@
                 asymmetry: feat.asymmetry_mean || 0,
                 border: feat.border_irregularity || 0,
                 nColors: feat.n_colors || 1,
-                aiDx: ai.prediction ? ai.prediction.toUpperCase() : 'UNKNOWN',
-                aiConf: ai.confidence || 0,
+                morphologyScore: morph.score,
+                morphologyRanking: morph.ranking,
+                visualConcern: morph.concern,
+                rankingColor: morph.color,
                 thumbB64: currentAnalysisResult.cropped_b64 || currentAnalysisResult.overlay_b64
             };
 
@@ -2940,7 +3121,7 @@
             saveHistoryList(history);
 
             logVisitModal.style.display = 'none';
-            showToast(`Logged "${tag}" to longitudinal timeline.`);
+            showToast(`Logged "${tag}" (Score: ${morph.score}/100) to timeline.`);
             renderHistoryUI();
         });
 
@@ -2953,7 +3134,8 @@
                     filename: 'lesion_w1_baseline.png', scaleStr: '0.0240 mm/px', isPhysical: true,
                     diameter: 5.8, diameterUnit: 'mm', area: 26.4, areaUnit: 'mm²',
                     asymmetry: 0.065, border: 0.12, nColors: 2,
-                    aiDx: 'BENIGN', aiConf: 96.2, thumbB64: null
+                    morphologyScore: 28, morphologyRanking: 'Regular / Small', visualConcern: 'low',
+                    rankingColor: 'var(--accent)', thumbB64: null
                 },
                 {
                     id: 'demo_2', date: '2026-09-08', timestamp: Date.now() - 14 * 86400000,
@@ -2961,7 +3143,8 @@
                     filename: 'lesion_w2.png', scaleStr: '0.0240 mm/px', isPhysical: true,
                     diameter: 5.9, diameterUnit: 'mm', area: 27.1, areaUnit: 'mm²',
                     asymmetry: 0.068, border: 0.13, nColors: 2,
-                    aiDx: 'BENIGN', aiConf: 95.5, thumbB64: null
+                    morphologyScore: 31, morphologyRanking: 'Regular / Small', visualConcern: 'low',
+                    rankingColor: 'var(--accent)', thumbB64: null
                 },
                 {
                     id: 'demo_3', date: '2026-09-15', timestamp: Date.now() - 7 * 86400000,
@@ -2969,7 +3152,8 @@
                     filename: 'lesion_w3.png', scaleStr: '0.0240 mm/px', isPhysical: true,
                     diameter: 6.2, diameterUnit: 'mm', area: 29.8, areaUnit: 'mm²',
                     asymmetry: 0.078, border: 0.15, nColors: 3,
-                    aiDx: 'BENIGN', aiConf: 93.1, thumbB64: null
+                    morphologyScore: 44, morphologyRanking: 'Moderate Variation', visualConcern: 'moderate',
+                    rankingColor: 'var(--status-amber)', thumbB64: null
                 },
                 {
                     id: 'demo_4', date: '2026-09-22', timestamp: Date.now(),
@@ -2977,7 +3161,8 @@
                     filename: 'lesion_w4.png', scaleStr: '0.0240 mm/px', isPhysical: true,
                     diameter: 6.4, diameterUnit: 'mm', area: 32.2, areaUnit: 'mm²',
                     asymmetry: 0.088, border: 0.17, nColors: 3,
-                    aiDx: 'BENIGN', aiConf: 91.4, thumbB64: null
+                    morphologyScore: 52, morphologyRanking: 'Moderate Variation', visualConcern: 'moderate',
+                    rankingColor: 'var(--status-amber)', thumbB64: null
                 }
             ];
             saveHistoryList(demo);
@@ -3075,7 +3260,9 @@
                     ? `<img src="data:image/png;base64,${item.thumbB64}" class="timeline-thumb" alt="Thumb">`
                     : `<div class="timeline-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-subtle);font-size:10px;">SCAN</div>`;
 
-                const dxColor = item.aiDx === 'BENIGN' ? 'var(--accent)' : 'var(--status-red)';
+                const rankColor = item.rankingColor || (item.morphologyScore > 60 ? 'var(--status-red)' : (item.morphologyScore > 40 ? 'var(--status-amber)' : 'var(--accent)'));
+                const morphScore = typeof item.morphologyScore === 'number' ? item.morphologyScore : 50;
+                const morphRank = item.morphologyRanking || (morphScore > 60 ? 'Highly Irregular / Large' : (morphScore > 40 ? 'Moderate Variation' : 'Regular / Small'));
 
                 card.innerHTML = `
                     <div style="display:flex; align-items:center; gap:12px;">
@@ -3083,12 +3270,16 @@
                         <div class="timeline-info">
                             <div class="timeline-title">
                                 <span>${item.tag}</span>
-                                <span style="font-size:11px; color:${dxColor}; font-family:var(--font-mono); font-weight:700;">${item.aiDx} (${item.aiConf}%)</span>
+                                <span style="font-size:11px; color:${rankColor}; font-family:var(--font-mono); font-weight:700; background:rgba(255,255,255,0.04); padding:2px 8px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">Score: ${morphScore}/100 • ${morphRank}</span>
                             </div>
                             <div class="timeline-sub">${item.date} • ${item.notes}</div>
                         </div>
                     </div>
                     <div class="timeline-metrics-strip">
+                        <div class="strip-col">
+                            <span>Morphology</span>
+                            <strong style="color:${rankColor};">${morphScore}/100</strong>
+                        </div>
                         <div class="strip-col">
                             <span>Diameter</span>
                             <strong>${item.diameter} ${item.diameterUnit}</strong>
@@ -3099,9 +3290,9 @@
                         </div>
                         <div class="strip-col">
                             <span>Asymmetry</span>
-                            <strong>${item.asymmetry.toFixed(3)}</strong>
+                            <strong>${typeof item.asymmetry === 'number' ? item.asymmetry.toFixed(3) : item.asymmetry}</strong>
                         </div>
-                        <button class="btn btn-ghost" onclick="deleteHistoryVisit('${item.id}')" style="height:28px; font-size:11px; color:var(--status-red);">✕</button>
+                        <button class="btn btn-ghost" onclick="deleteHistoryVisit('${item.id}')" style="height:28px; font-size:11px; color:var(--status-red);" title="Delete visit">✕</button>
                     </div>
                 `;
                 listEl.appendChild(card);
@@ -3158,16 +3349,16 @@
                 },
                 {
                     name: 'Mean Asymmetry (PCA)',
-                    v1: sA.asymmetry.toFixed(3),
-                    v2: sB.asymmetry.toFixed(3),
+                    v1: typeof sA.asymmetry === 'number' ? sA.asymmetry.toFixed(3) : sA.asymmetry,
+                    v2: typeof sB.asymmetry === 'number' ? sB.asymmetry.toFixed(3) : sB.asymmetry,
                     raw1: sA.asymmetry, raw2: sB.asymmetry,
                     unit: '',
                     isRisk: (pct) => pct > 15.0
                 },
                 {
                     name: 'Border Irregularity',
-                    v1: sA.border.toFixed(3),
-                    v2: sB.border.toFixed(3),
+                    v1: typeof sA.border === 'number' ? sA.border.toFixed(3) : sA.border,
+                    v2: typeof sB.border === 'number' ? sB.border.toFixed(3) : sB.border,
                     raw1: sA.border, raw2: sB.border,
                     unit: '',
                     isRisk: (pct) => pct > 15.0
@@ -3181,13 +3372,21 @@
                     isRisk: (pct) => sB.nColors > sA.nColors
                 },
                 {
-                    name: 'AI Neural Diagnosis',
-                    v1: `${sA.aiDx} (${sA.aiConf}%)`,
-                    v2: `${sB.aiDx} (${sB.aiConf}%)`,
-                    raw1: sA.aiConf, raw2: sB.aiConf,
-                    unit: '%',
+                    name: 'Overall Morphology Score',
+                    v1: `${sA.morphologyScore}/100`,
+                    v2: `${sB.morphologyScore}/100`,
+                    raw1: sA.morphologyScore, raw2: sB.morphologyScore,
+                    unit: 'pts',
+                    isRisk: (pct) => (sB.morphologyScore - sA.morphologyScore) > 5 || sB.morphologyScore > 60
+                },
+                {
+                    name: 'Morphological Concern Ranking',
+                    v1: `${sA.morphologyRanking}`,
+                    v2: `${sB.morphologyRanking}`,
+                    raw1: sA.morphologyScore, raw2: sB.morphologyScore,
+                    unit: '',
                     isCategorical: true,
-                    eval: sA.aiDx === sB.aiDx ? 'Class Concordant' : 'Discordant / Alert'
+                    eval: sA.morphologyRanking === sB.morphologyRanking ? 'Consistent Ranking' : (sB.morphologyScore > sA.morphologyScore ? 'Elevated Variation' : 'Reduced Variation')
                 }
             ];
 
@@ -3310,8 +3509,8 @@
                     <td>${it.date}</td>
                     <td>${it.diameter} ${it.diameterUnit}</td>
                     <td>${it.area} ${it.areaUnit}</td>
-                    <td>${it.asymmetry.toFixed(3)}</td>
-                    <td>${it.aiDx}</td>
+                    <td>${typeof it.asymmetry === 'number' ? it.asymmetry.toFixed(3) : it.asymmetry}</td>
+                    <td><strong>${it.morphologyScore}/100</strong> (${it.morphologyRanking})</td>
                     <td>${statusText}</td>
                 `;
                 tbody.appendChild(tr);
@@ -3643,6 +3842,8 @@
                 }
                 ctxGrey.putImageData(imgDataG, 0, 0);
                 viewer3D.greyTex = new THREE.CanvasTexture(cGrey);
+                viewer3D.greyTex.minFilter = THREE.LinearFilter;
+                viewer3D.greyTex.generateMipmaps = false;
 
                 // Generate red-green
                 const cRG = document.createElement('canvas');
@@ -3656,9 +3857,17 @@
                     imgDataRG.data[i] = val; // R
                     imgDataRG.data[i+1] = 255 - val; // G
                     imgDataRG.data[i+2] = 0; // B
+                    imgDataRG.data[i+3] = 255; // Alpha
                 }
                 ctxRG.putImageData(imgDataRG, 0, 0);
                 viewer3D.redGreenTex = new THREE.CanvasTexture(cRG);
+                viewer3D.redGreenTex.minFilter = THREE.LinearFilter;
+                viewer3D.redGreenTex.generateMipmaps = false;
+
+                colorTex.minFilter = THREE.LinearFilter;
+                colorTex.generateMipmaps = false;
+                depthTex.minFilter = THREE.LinearFilter;
+                depthTex.generateMipmaps = false;
                 const imgAspect = colorTex.image.width / colorTex.image.height;
                 let planeW = 2;
                 let planeH = 2;
@@ -3705,6 +3914,7 @@
         }
 
         document.getElementById('selColorTheme').addEventListener('change', (e) => {
+            e.stopPropagation();
             if (!viewer3D.mat) return;
             const theme = e.target.value;
             
@@ -3725,13 +3935,17 @@
                     break;
                 case 'clay':
                     viewer3D.mat.map = null;
-                    viewer3D.mat.color.setHex(0xaaaaaa);
+                    viewer3D.mat.color.setHex(0xd0d5dd);
                     break;
+            }
+            if (viewer3D.mat.map) {
+                viewer3D.mat.map.needsUpdate = true;
             }
             viewer3D.mat.needsUpdate = true;
         });
         
         document.getElementById('btnToggleWireframe').addEventListener('click', (e) => {
+            e.stopPropagation();
             if (!viewer3D.mat) return;
             viewer3D.isWireframe = !viewer3D.isWireframe;
             viewer3D.mat.wireframe = viewer3D.isWireframe;
@@ -3739,6 +3953,7 @@
         });
 
         document.getElementById('selDepthExaggeration').addEventListener('change', (e) => {
+            e.stopPropagation();
             if (!viewer3D.mat) return;
             viewer3D.exaggeration = parseFloat(e.target.value);
             viewer3D.mat.displacementScale = 0.3 * viewer3D.exaggeration;
