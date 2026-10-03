@@ -1,0 +1,24 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment & Secrets
+.env
+.venv
+env/
+venv/
+ENV/
+.gemini_config.json
+
+# Large model cache/checkpoints folder
+efficientnet_b0_finetuned_best/
+
+# Temporary and log files
+temp.js
+*.tmp
+*.log
+
+# Editor settings
+.vscode/
+.idea/
